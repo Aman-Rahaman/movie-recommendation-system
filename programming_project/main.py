@@ -60,20 +60,31 @@ dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(fetch_keywor
 dataFrames_movies["cast"] = dataFrames_movies["cast"].apply(fetch_cast)
 dataFrames_movies["crew"] = dataFrames_movies["crew"].apply(fetch_crew)
 
-dataFrames_movies["overview"] = dataFrames_movies["overview"].apply( lambda x:x.split() )
+def splitting_of_string(s):
+    return s.split()
 
+dataFrames_movies["overview"] = dataFrames_movies["overview"].apply( splitting_of_string )
 
-dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(lambda x:[i.replace(" ","") for i in x])
-dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(lambda x:[i.replace(" ","") for i in x])
-dataFrames_movies['cast'] = dataFrames_movies['cast'].apply(lambda x:[i.replace(" ","") for i in x])
-dataFrames_movies['crew'] = dataFrames_movies['crew'].apply(lambda x:[i.replace(" ","") for i in x])
+def remove_spaces(l):
+    new_list = []
+    for i in l:
+        new_list.append( i.replace(" ", "") )
+    return new_list
+
+dataFrames_movies['genres'] = dataFrames_movies['genres'].apply( remove_spaces )
+dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply( remove_spaces )
+dataFrames_movies['cast'] = dataFrames_movies['cast'].apply( remove_spaces )
+dataFrames_movies['crew'] = dataFrames_movies['crew'].apply( remove_spaces )
 
 
 dataFrames_movies['tags'] = dataFrames_movies['genres'] + dataFrames_movies['keywords'] + dataFrames_movies["cast"] + dataFrames_movies['crew'] + dataFrames_movies["overview"]
 
 final_movie_data = dataFrames_movies[['movie_id','title','tags']]
-#
-final_movie_data.loc[:,'tags'] = final_movie_data["tags"].apply(lambda x : " ".join(x))
+
+def list_to_string(l):
+    return " ".join(l)
+
+final_movie_data.loc[: ,'tags'] = final_movie_data["tags"].apply( list_to_string )
 
 
 def stemming(x):
@@ -82,9 +93,9 @@ def stemming(x):
         l.append( PorterStemmer().stem(i) )
     return " ".join(l)
 
-final_movie_data.loc[:,'tags'] = final_movie_data['tags'].apply(stemming)
+final_movie_data.loc[:,'tags'] = final_movie_data['tags'].apply( stemming )
 
-vectors = CountVectorizer(stop_words = "english" ).fit_transform( final_movie_data['tags'] ).toarray()
+vectors = CountVectorizer( max_features = 5000, stop_words = "english" ).fit_transform( final_movie_data['tags'] ).toarray()
 
 array_of_similarity_values_for_all_movies = cosine_similarity(vectors)
 
@@ -95,8 +106,18 @@ def recommend(x):
     for i in list_of_similar_movies:
         print( final_movie_data.iloc[ i[0],1 ].title() ) # here title is a string function
 
-for i in range(5):
+
+while True:
     str = input("Enter a movie name : ").lower().strip()
     recommend(str)
+    print("*"*30)
+    print("Do you want to use it again ? ")
+    ans = input("Enter 'no' to exit or enter 'yes' to use it again : ").strip().lower()
+    if ans == 'no':
+        break
+
+
 
 # NEED to check if the input movie name is present or not!!!!!
+# try to not use ast
+# .index[0] ??? in recommend()
