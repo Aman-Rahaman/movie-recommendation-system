@@ -1,8 +1,10 @@
+import numpy
 import pandas as pd
 import ast
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
+from tkinter import *
 
 dataFrames_movies = pd.read_csv("tmdb_5000_movies.csv")
 dataFrames_credits = pd.read_csv("tmdb_5000_credits.csv")
@@ -51,8 +53,6 @@ def fetch_crew(x):
     return l
 
 
-
-
 dataFrames_movies['title'] = dataFrames_movies['title'].apply(lower_title)
 
 dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(fetch_genres)
@@ -95,26 +95,30 @@ def stemming(x):
 
 final_movie_data.loc[:,'tags'] = final_movie_data['tags'].apply( stemming )
 
-vectors = CountVectorizer( max_features = 5000, stop_words = "english" ).fit_transform( final_movie_data['tags'] ).toarray()
+vectors = CountVectorizer( stop_words = "english" ).fit_transform( final_movie_data['tags'] ).toarray()
+
 
 array_of_similarity_values_for_all_movies = cosine_similarity(vectors)
 
-def recommend(x):
-    index = final_movie_data[ final_movie_data['title'] == x ].index[0]
-    similarity_values_for_one_movie = array_of_similarity_values_for_all_movies [ index ]
-    list_of_similar_movies = sorted( list( enumerate( similarity_values_for_one_movie ) ), reverse=True, key=lambda x:x[1] )[1:6]
-    for i in list_of_similar_movies:
-        print( final_movie_data.iloc[ i[0],1 ].title() ) # here title is a string function
+numpy.save("array_of_similarity_values_for_all_movies.npy",array_of_similarity_values_for_all_movies)
+final_movie_data.to_pickle('final_movie_data.pkl')
+
+# def recommend(x):
+#     index = final_movie_data[ final_movie_data['title'] == x ].index[0]
+#     similarity_values_for_one_movie = array_of_similarity_values_for_all_movies [ index ]
+#     list_of_similar_movies = sorted( list( enumerate( similarity_values_for_one_movie ) ), reverse=True, key=lambda x:x[1] )[1:6]
+#     for i in list_of_similar_movies:
+#         print( final_movie_data.iloc[ i[0],1 ].title() ) # here title is a string function
 
 
-while True:
-    str = input("Enter a movie name : ").lower().strip()
-    recommend(str)
-    print("*"*30)
-    print("Do you want to use it again ? ")
-    ans = input("Enter 'no' to exit or enter 'yes' to use it again : ").strip().lower()
-    if ans == 'no':
-        break
+# while True:
+#     str = input("Enter a movie name : ").lower().strip()
+#     recommend(str)
+#     print("*"*30)
+#     print("Do you want to use it again ? ")
+#     ans = input("Enter 'no' to exit or enter 'yes' to use it again : ").strip().lower()
+#     if ans == 'no':
+#         break
 
 
 
