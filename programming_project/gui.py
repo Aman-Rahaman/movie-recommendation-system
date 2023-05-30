@@ -1,4 +1,9 @@
 from tkinter import *
+import numpy
+import pandas as pd
+
+array_of_similarity_values_for_all_movies = numpy.load("array_of_similarity_values_for_all_movies.npy")
+final_movie_data = pd.read_pickle('final_movie_data.pkl')
 
 window = Tk()
 window.title("Movie recommendation system")
