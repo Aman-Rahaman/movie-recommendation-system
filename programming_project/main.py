@@ -4,53 +4,58 @@ import ast
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
-from tkinter import *
 
 dataFrames_movies1 = pd.read_csv("movie_dataset_1.csv")
 dataFrames_movies2 = pd.read_csv("movie_dataset_2.csv")
 
-dataFrames_movies = dataFrames_movies1.merge(dataFrames_movies2,on="title")  # combining movies and credits on the basis of the movie title name
+dataFrames_movies = dataFrames_movies1.merge(dataFrames_movies2, on="title")
+# combining movies and credits on the basis of the movie title name
 
 
-dataFrames_movies = dataFrames_movies[['movie_id','title','overview','genres','keywords','cast','crew']] # selecting particular attributes from the dataset which are usefull for making tags
+dataFrames_movies = dataFrames_movies[['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
+# selecting particular attributes from the dataset which are usefull for making tags
 
 
-dataFrames_movies.dropna(inplace = True)  # removing the rows which contain null values in any of their attributes
+dataFrames_movies.dropna(inplace=True)  # removing the rows which contain null values in any of their attributes
 
 
 def lower_title(x):
     return x.lower()
 
+
 def fetch_genres(x):
-    l = []
+    generes = []
     for i in ast.literal_eval(x):
-        l.append(i['name'])
-    return l
+        generes.append(i['name'])
+    return generes
+
 
 def fetch_keyword(x):
-    l=[]
+    keyword = []
     for i in ast.literal_eval(x):
-        l.append(i['name'])
-    return l
+        keyword.append(i['name'])
+    return keyword
+
 
 def fetch_cast(x):
-    l=[]
+    casts = []
     counter = 0
     for i in ast.literal_eval(x):
-        if counter <= 5 :
-            l.append(i['name'])
+        if counter <= 5:
+            casts.append(i['name'])
             counter += 1
         else:
             break
-    return l
+    return casts
+
 
 def fetch_crew(x):
-    l=[]
+    crew = []
     for i in ast.literal_eval(x):
         if i['job'] == 'Director':
-            l.append(i['name'])
+            crew.append(i['name'])
             break
-    return l
+    return crew
 
 
 dataFrames_movies['title'] = dataFrames_movies['title'].apply(lower_title)
@@ -60,47 +65,54 @@ dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(fetch_keywor
 dataFrames_movies["cast"] = dataFrames_movies["cast"].apply(fetch_cast)
 dataFrames_movies["crew"] = dataFrames_movies["crew"].apply(fetch_crew)
 
+
 def splitting_of_string(s):
     return s.split()
 
-dataFrames_movies["overview"] = dataFrames_movies["overview"].apply( splitting_of_string )
 
-def remove_spaces(l):
+dataFrames_movies["overview"] = dataFrames_movies["overview"].apply(splitting_of_string)
+
+
+def remove_spaces(x):
     new_list = []
-    for i in l:
-        new_list.append( i.replace(" ", "") )
+    for i in x:
+        new_list.append(i.replace(" ", ""))
     return new_list
 
-dataFrames_movies['genres'] = dataFrames_movies['genres'].apply( remove_spaces )
-dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply( remove_spaces )
-dataFrames_movies['cast'] = dataFrames_movies['cast'].apply( remove_spaces )
-dataFrames_movies['crew'] = dataFrames_movies['crew'].apply( remove_spaces )
+
+dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(remove_spaces)
+dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(remove_spaces)
+dataFrames_movies['cast'] = dataFrames_movies['cast'].apply(remove_spaces)
+dataFrames_movies['crew'] = dataFrames_movies['crew'].apply(remove_spaces)
 
 
 dataFrames_movies['tags'] = dataFrames_movies['genres'] + dataFrames_movies['keywords'] + dataFrames_movies["cast"] + dataFrames_movies['crew'] + dataFrames_movies["overview"]
 
-final_movie_data = dataFrames_movies[['movie_id','title','tags']]
+final_movie_data = dataFrames_movies[['movie_id', 'title', 'tags']]
 
-def list_to_string(l):
-    return " ".join(l)
 
-final_movie_data.loc[: ,'tags'] = final_movie_data["tags"].apply( list_to_string )
+def list_to_string(x):
+    return " ".join(x)
+
+
+final_movie_data.loc[:, 'tags'] = final_movie_data["tags"].apply(list_to_string)
 
 
 def stemming(x):
-    l=[]
+    stemmed_words = []
     for i in x.split():
-        l.append( PorterStemmer().stem(i) )
-    return " ".join(l)
+        stemmed_words.append(PorterStemmer().stem(i))
+    return " ".join(stemmed_words)
 
-final_movie_data.loc[:,'tags'] = final_movie_data['tags'].apply( stemming )
 
-vectors = CountVectorizer( stop_words = "english" ).fit_transform( final_movie_data['tags'] ).toarray()
+final_movie_data.loc[:, 'tags'] = final_movie_data['tags'].apply(stemming)
+
+vectors = CountVectorizer(stop_words="english").fit_transform(final_movie_data['tags']).toarray()
 
 
 array_of_similarity_values_for_all_movies = cosine_similarity(vectors)
 
-numpy.save("array_of_similarity_values_for_all_movies.npy",array_of_similarity_values_for_all_movies)
+numpy.save("array_of_similarity_values_for_all_movies.npy", array_of_similarity_values_for_all_movies)
 final_movie_data.to_pickle('final_movie_data.pkl')
 
 
