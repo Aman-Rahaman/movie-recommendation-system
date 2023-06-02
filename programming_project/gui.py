@@ -11,6 +11,9 @@ window.geometry("600x500")
 window['background'] = 'pink'
 
 
+def recommend(x):
+    pass
+
 def search():
     movie = input_movie_name.get().strip().lower()
 
@@ -27,6 +30,22 @@ def search():
         existance_status_label.config(text="")
         poster_labels = [poster1, poster2, poster3, poster4, poster5]
         movie_name_labels = [name1, name2, name3, name4, name5]
+        
+        for i in range(len(RecommendedMovies)):
+            movie_name = RecommendedMovies[i]
+            movie_poster_url = RecommendedMoviesPoster[i]
+            
+            if movie_poster_url is None:
+                poster_labels[i].config(image=img)
+                poster_labels[i].image = img
+            else:
+                u = urlopen(movie_poster_url)
+                raw_data = u.read()
+                u.close()
+                
+                im = Image.open(io.BytesIO(raw_data)).resize((150, 250))
+                
+                poster = ImageTk.PhotoImage(im)
   
   
 upper_frame = LabelFrame(window, text="Enter Movie Name", bg='pink')
