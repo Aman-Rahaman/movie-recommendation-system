@@ -47,4 +47,14 @@ img = Image.open('grey.jpeg')
 img = img.resize((150, 250))
 img = ImageTk.PhotoImage(img)
 
+# labels for posters
+poster1 = Label(lower_frame, image=img)
+poster1.grid(row=0, column=0)
+
+poster2 = Label(lower_frame, image=img)
+poster2.grid(row=0, column=1)
+
+poster3 = Label(lower_frame, image=img)
+poster3.grid(row=0, column=2)
+
 window.mainloop()
