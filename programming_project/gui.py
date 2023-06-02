@@ -73,5 +73,14 @@ name2.grid(row=1, column=1)
 name3 = Label(lower_frame, text='poster 3')
 name3.grid(row=1, column=2)
 
+name4 = Label(lower_frame, text='poster 4')
+name4.grid(row=1, column=3)
+
+name5 = Label(lower_frame, text='poster 5')
+name5.grid(row=1, column=4)
+
+# label for status bar
+existance_status_label = Label(window, text="", background="pink")
+existance_status_label.pack()
 
 window.mainloop()
