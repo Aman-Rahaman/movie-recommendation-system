@@ -10,6 +10,25 @@ window.title("Movie recommendation system")
 window.geometry("600x500")
 window['background'] = 'pink'
 
+
+def search():
+    movie = input_movie_name.get().strip().lower()
+
+    if movie == "":
+        existance_status_label.config(text="Please Enter A Movie Name")
+        return
+
+    RecommendedMovies, RecommendedMoviesPoster = recommend(movie)
+
+    if RecommendedMovies is False:
+        existance_status_label.config(text="Entered movie not found in the data")
+
+    else:
+        existance_status_label.config(text="")
+        poster_labels = [poster1, poster2, poster3, poster4, poster5]
+        movie_name_labels = [name1, name2, name3, name4, name5]
+  
+  
 upper_frame = LabelFrame(window, text="Enter Movie Name", bg='pink')
 upper_frame.pack(pady=25)
 
