@@ -46,6 +46,11 @@ def search():
                 im = Image.open(io.BytesIO(raw_data)).resize((150, 250))
                 
                 poster = ImageTk.PhotoImage(im)
+                
+                poster_labels[i].config(image=poster)
+                poster_labels[i].image = poster
+            
+            movie_name_labels[i].config(text=movie_name)
   
   
 upper_frame = LabelFrame(window, text="Enter Movie Name", bg='pink')
