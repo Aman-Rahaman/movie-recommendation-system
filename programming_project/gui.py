@@ -32,7 +32,14 @@ def recommend(x):
         RecommendedMovies = []
         RecommendedMoviesPoster = []
         for i in list_of_similar_movies:
-            pass
+            movie_id = final_movie_data.iloc[i[0], 0]
+            RecommendedMovies.append(final_movie_data.iloc[i[0], 1].title())  # here title is a string function
+            RecommendedMoviesPoster.append(fetch_poster(movie_id))
+
+        return RecommendedMovies, RecommendedMoviesPoster
+    
+    else:
+        return False, False
 
 
 def search():
