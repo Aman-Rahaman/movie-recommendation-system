@@ -57,4 +57,10 @@ poster2.grid(row=0, column=1)
 poster3 = Label(lower_frame, image=img)
 poster3.grid(row=0, column=2)
 
+poster4 = Label(lower_frame, image=img)
+poster4.grid(row=0, column=3)
+
+poster5 = Label(lower_frame, image=img)
+poster5.grid(row=0, column=4)
+
 window.mainloop()
