@@ -43,4 +43,8 @@ button.grid(row=0, column=1, padx=10)
 lower_frame = LabelFrame(window,height=300,width=800)
 lower_frame.pack(pady=25)
 
+img = Image.open('grey.jpeg')
+img = img.resize((150, 250))
+img = ImageTk.PhotoImage(img)
+
 window.mainloop()
