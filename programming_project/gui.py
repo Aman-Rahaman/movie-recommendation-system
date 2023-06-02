@@ -67,4 +67,11 @@ poster5.grid(row=0, column=4)
 name1 = Label(lower_frame, text='poster 1')
 name1.grid(row=1, column=0)
 
+name2 = Label(lower_frame, text='poster 2')
+name2.grid(row=1, column=1)
+
+name3 = Label(lower_frame, text='poster 3')
+name3.grid(row=1, column=2)
+
+
 window.mainloop()
