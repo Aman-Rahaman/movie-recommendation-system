@@ -5,20 +5,34 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 
+
+# We are having two datasets for movies.
+# One is having the casts and crew in the movie and the other one is having the rest of the informations
+# like: title, geners, keywords, overview, budget, release date, profit, etc.
 dataFrames_movies1 = pd.read_csv("movie_dataset_1.csv")
 dataFrames_movies2 = pd.read_csv("movie_dataset_2.csv")
 
+
 dataFrames_movies = dataFrames_movies1.merge(dataFrames_movies2, on="title")
-# combining movies and credits on the basis of the movie title name
+# Merging the datasets. now I have a dataset having all the informations related to a movie.
 
 
 dataFrames_movies = dataFrames_movies[['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
-# selecting particular attributes from the dataset which are usefull for making tags
+# Here we are selecting some particular attributes from the dataset which are usefull for making the tags for each movie.
+# Here movie_id is a unique id for each movie which is in the website of TMDB.
+# This will be later very helpfull to fetch posters from the website.
 
 
-dataFrames_movies.dropna(inplace=True)  # removing the rows which contain null values in any of their attributes
+dataFrames_movies.dropna(inplace=True) 
+# Removing the rows which contain null values in any of their attributes.
+# This is because null value in any of these attributes will show wrong result.
+# we need the values for the inportant attributes which identifies a movie.
 
 
+# Function to convert a string into all lower case.
+# This I will use to lower case the movie titles so that it becomes easier to check the input movie name in the dataset.
+# Python is case sensitive.
+# So a movie title in lower case wont be equal to the same movie title but in different case, like title case or upper case.
 def lower_title(x):
     return x.lower()
 
@@ -116,55 +130,7 @@ numpy.save("array_of_similarity_values_for_all_movies.npy", array_of_similarity_
 final_movie_data.to_pickle('final_movie_data.pkl')
 
 
-# def recommend(x):
-#     index = final_movie_data[ final_movie_data['title'] == x ].index[0]
-#     similarity_values_for_one_movie = array_of_similarity_values_for_all_movies [ index ]
-#     list_of_similar_movies = sorted( list( enumerate( similarity_values_for_one_movie ) ), reverse=True, key=lambda x:x[1] )[1:6]
-#     return list_of_similar_movies
-#     # for i in list_of_similar_movies:
-#     #     print( final_movie_data.iloc[ i[0],1 ].title() ) # here title is a string function
-#
-# #*****************************************************************************
-#
-# window = Tk()
-# window.title("Movie recommendation system")
-# window.geometry("600x500")
-#
-# def search():
-#     list_of_recommended_movies = recommend( input_movie_name.get() )
-#     for i in list_of_recommended_movies:
-#         print( final_movie_data.iloc[ i[0],1 ].title() ) # here title is a string function
-#
-# upper_frame = LabelFrame(window, text="Enter Movie Name")
-# upper_frame.pack(pady=25)
-#
-# input_movie_name = StringVar()
-#
-# movie_input = Entry( upper_frame, font=("Helvetica",30), textvariable=input_movie_name )
-# movie_input.grid(row=0, column=0, padx=10, pady=10)
-#
-# button = Button(upper_frame, text="Recommend", command=search)
-# button.grid(row=0, column=1, padx=10)
-#
-# text_box = Text(window, height=20, width=65, wrap=WORD)
-# text_box.pack(pady=10)
-#
-# window.mainloop()
-#
-# #********************************************************************
-#
-#
-# # while True:
-# #     str = input("Enter a movie name : ").lower().strip()
-# #     recommend(str)
-# #     print("*"*30)
-# #     print("Do you want to use it again ? ")
-# #     ans = input("Enter 'no' to exit or enter 'yes' to use it again : ").strip().lower()
-# #     if ans == 'no':
-# #         break
-#
-#
-#
+
 # # NEED to check if the input movie name is present or not!!!!!
 # # try to not use ast
 # # .index[0] ??? in recommend()
