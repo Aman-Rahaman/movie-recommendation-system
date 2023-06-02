@@ -63,4 +63,8 @@ poster4.grid(row=0, column=3)
 poster5 = Label(lower_frame, image=img)
 poster5.grid(row=0, column=4)
 
+# labels for movie name
+name1 = Label(lower_frame, text='poster 1')
+name1.grid(row=1, column=0)
+
 window.mainloop()
