@@ -2,6 +2,10 @@ from tkinter import *
 import numpy
 import pandas as pd
 
+from urllib.request import urlopen
+from PIL import Image, ImageTk
+import io
+
 array_of_similarity_values_for_all_movies = numpy.load("array_of_similarity_values_for_all_movies.npy")
 final_movie_data = pd.read_pickle('final_movie_data.pkl')
 
@@ -11,8 +15,25 @@ window.geometry("600x500")
 window['background'] = 'pink'
 
 
+def fetch_poster(movie_id):
+    response = requests.get("https://api.themoviedb.org/3/movie/{}?api_key=d71c21a739efb3a0137279c4d08c7612&language=en-US".format(movie_id))
+    data = response.json()
+    if data["poster_path"] is None:
+        return None
+    else:
+        return "http://image.tmdb.org/t/p/w500/" + data["poster_path"]
+
 def recommend(x):
-    pass
+    if x in final_movie_data['title'].values:
+        index = final_movie_data[final_movie_data['title'] == x].index[0]
+        similarity_values_for_the_movie = array_of_similarity_values_for_all_movies[index]
+        list_of_similar_movies = sorted(list(enumerate(similarity_values_for_the_movie)), reverse=True,
+                                        key=lambda x: x[1])[1:6]
+        RecommendedMovies = []
+        RecommendedMoviesPoster = []
+        for i in list_of_similar_movies:
+            pass
+
 
 def search():
     movie = input_movie_name.get().strip().lower()
@@ -32,6 +53,7 @@ def search():
         movie_name_labels = [name1, name2, name3, name4, name5]
         
         for i in range(len(RecommendedMovies)):
+            
             movie_name = RecommendedMovies[i]
             movie_poster_url = RecommendedMoviesPoster[i]
             
