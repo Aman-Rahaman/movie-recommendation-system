@@ -8,8 +8,8 @@ from urllib.request import urlopen
 from PIL import Image, ImageTk
 import io
 
-customtkinter.set_appearance_mode("Light")
-customtkinter.set_default_color_theme("blue")
+customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 array_of_similarity_values_for_all_movies = numpy.load("array_of_similarity_values_for_all_movies.npy")
@@ -31,8 +31,8 @@ def fetch_poster(movie_id):
 
 
 def recommend(x):
-    if x in final_movie_data['movie_name'].values:
-        index = final_movie_data[final_movie_data['movie_name'] == x].index[0]
+    if x in final_movie_data['title'].values:
+        index = final_movie_data[final_movie_data['title'] == x].index[0]
         similarity_values_for_the_movie = array_of_similarity_values_for_all_movies[index]
         list_of_similar_movies = sorted(list(enumerate(similarity_values_for_the_movie)), reverse=True,
                                         key=lambda x: x[1])[1:6]
