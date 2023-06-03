@@ -5,31 +5,30 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 
-dataFrame1 = pd.read_csv("dataset1.csv")
+dataFrames_movies1 = pd.read_csv("movie_dataset_1.csv")
 print("open first csv file")
 # This dataset1.csv file contains the TMDB_id, actors names and the other people in the unit.
 # TMDB is similar to IMDB. TMDB = 'The Movie Database'
 
-dataFrame2 = pd.read_csv("dataset2.csv")
+dataFrames_movies2 = pd.read_csv("movie_dataset_2.csv")
 print("open second csv file")
 # This dataset2.csv file contains a lot of data with respect to each movie.
 # Most of the attributes in this are not in much use of use.
 # Therefore we will only take some selective attributes.
 
-dataFrame_films = dataFrame1.merge(dataFrame2, on="movie_name")
+dataFrames_movies = dataFrames_movies1.merge(dataFrames_movies2, on="title")
 print("merging the frames")
 # combining movies and credits on the basis of the movie title name.
 # now attributes from both the files are in one dataframe.
 
 
-dataFrame_films = dataFrame_films[['TMDB_key', 'movie_name', 'summary', 'genres', 'labels', 'actors', 'unit']]
+dataFrames_movies = dataFrames_movies[['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
 print("selecting attributes")
 # selecting particular attributes from the dataset which are usefull for making tags.
 # selecting only those attributes which are helpful in making the tag.
 
 
-dataFrame_films.dropna(inplace=True)
-print("removing rows with null value")
+dataFrames_movies.dropna(inplace=True)
 # removing the rows which contain null values in any of their attributes
 # this is because these attributes are important to make the tags.
 # if for a movie we have null values in any of the attributes, the the system will show wrong result for that movie.
@@ -41,69 +40,65 @@ def lower_case(x):
     return x.lower()
 
 
-dataFrame_films['movie_name'] = dataFrame_films['movie_name'].apply(lower_case)
-print("movie_name to lower case")
-
-
 # This is a function to fetch the actors return a list.
 # Here we are using ast.literal_eval because of the format in which the labels are in the dataframe.
 # The labels are in the form of dictionaries in a list but the whole thing is a string.
 # that's why we are using ast.literal_eval
-def fetch_actors(x):
-    actors = []
-    number_of_actors = 0
-    for actor in ast.literal_eval(x):
-        if number_of_actors <= 5:
-            actors.append(actor['name'])
-            number_of_actors += 1
+def fetch_cast(x):
+    casts = []
+    counter = 0
+    for i in ast.literal_eval(x):
+        if counter <= 5:
+            casts.append(i['name'])
+            counter += 1
         else:
             break
-    return actors
-
-
-print("running fetch actor")
-dataFrame_films["actors"] = dataFrame_films["actors"].apply(fetch_actors)
+    return casts
 
 
 # This is the function to fetch the labels of a particular film from the dataframe and return a list.
 # even here we are using ast.literal_eval
-def fetch_labels(x):
-    labels = []
-    for label in ast.literal_eval(x):
-        labels.append(label['name'])
-    return labels
-
-
-print("running fetch labels")
-dataFrame_films['labels'] = dataFrame_films['labels'].apply(fetch_labels)
+def fetch_keyword(x):
+    keyword = []
+    for i in ast.literal_eval(x):
+        keyword.append(i['name'])
+    return keyword
 
 
 # function to fetch the generes from the dataset and return a list.
 # even here we are using ast.literal_eval
-def fetch_generes(x):
+def fetch_genres(x):
     generes = []
-    for genere in ast.literal_eval(x):
-        generes.append(genere['name'])
+    for i in ast.literal_eval(x):
+        generes.append(i['name'])
     return generes
-
-
-print("running fetch generes")
-dataFrame_films['genres'] = dataFrame_films['genres'].apply(fetch_generes)
 
 
 # function to fetch the people behind the unit from the dataset and return a list.
 # even here we are using ast.literal_eval
-def fetch_unit(x):
-    unit = []
+def fetch_crew(x):
+    crew = []
     for i in ast.literal_eval(x):
         if i['job'] == 'Director':
-            unit.append(i['name'])
+            crew.append(i['name'])
             break
-    return unit
+    return crew
 
+
+print("movie_name to lower case")
+dataFrames_movies['title'] = dataFrames_movies['title'].apply(lower_case)
+
+print("running fetch generes")
+dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(fetch_genres)
+
+print("running fetch labels")
+dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(fetch_keyword)
+
+print("running fetch actor")
+dataFrames_movies["cast"] = dataFrames_movies["cast"].apply(fetch_cast)
 
 print("running fetch unit")
-dataFrame_films["unit"] = dataFrame_films["unit"].apply(fetch_unit)
+dataFrames_movies["crew"] = dataFrames_movies["crew"].apply(fetch_crew)
 
 
 # function to split the summary into a list
@@ -112,8 +107,7 @@ def splitting_of_string(s):
 
 
 # splitting of summary from string to list
-dataFrame_films["summary"] = dataFrame_films["summary"].apply(splitting_of_string)
-print("splitting of string")
+dataFrames_movies["overview"] = dataFrames_movies["overview"].apply(splitting_of_string)
 
 
 # function to remove the back spaces.
@@ -125,33 +119,25 @@ def remove_spaces(x):
 
 
 # removing space from each of the generes so that the generes appear as one
-dataFrame_films['genres'] = dataFrame_films['genres'].apply(remove_spaces)
+dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(remove_spaces)
 print("removing whitespaces from genere")
 
 # removing spaces from labels so that the labels appear as one if their is a space in between
-dataFrame_films['labels'] = dataFrame_films['labels'].apply(remove_spaces)
+dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(remove_spaces)
 print("removing whitespaces from labels")
 
 # removing spaces from actor names otherwise actor names won't come as one name if their is any space
-dataFrame_films['actors'] = dataFrame_films['actors'].apply(remove_spaces)
+dataFrames_movies['cast'] = dataFrames_movies['cast'].apply(remove_spaces)
 print("removing whitespaces from actors")
 
 # removing space from each of the unit person's name because of the same logic
-dataFrame_films['unit'] = dataFrame_films['unit'].apply(remove_spaces)
+dataFrames_movies['crew'] = dataFrames_movies['crew'].apply(remove_spaces)
 print("removing whitespaces from unit")
 
 
-# creating tags for the dataframe
-def create_tags(dataframe):
-    dataframe['tags'] = dataframe['genres'] + dataframe['labels'] +\
-                              dataframe["actors"] + dataframe['unit'] + dataframe["summary"]
+dataFrames_movies['tags'] = dataFrames_movies['genres'] + dataFrames_movies['keywords'] + dataFrames_movies["cast"] + dataFrames_movies['crew'] + dataFrames_movies["overview"]
 
-
-print("creating tags")
-create_tags(dataFrame_films)
-
-# taking only key, movie name and tags from the dataframe cause we don't need other.
-final_movie_data = dataFrame_films[['TMDB_key', 'movie_name', 'tags']]
+final_movie_data = dataFrames_movies[['movie_id', 'title', 'tags']]
 
 
 # function to join a list to string.
@@ -163,7 +149,7 @@ def list_to_string(x):
 
 
 print("converting tags from a list to a string")
-final_movie_data.loc[:, "tags"] = final_movie_data["tags"].apply(list_to_string)
+final_movie_data.loc[:, 'tags'] = final_movie_data["tags"].apply(list_to_string)
 
 
 # funtion for stemming
@@ -180,7 +166,6 @@ vectors = CountVectorizer(stop_words="english").fit_transform(final_movie_data['
 
 
 array_of_similarity_values_for_all_movies = cosine_similarity(vectors)
-
 
 # saving the cosine similarity values. this is in the form of array.
 # we will use it in the gui.
