@@ -5,24 +5,24 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 
-dataFrames_movies1 = pd.read_csv("movie_dataset_1.csv")
+dataFrames_movies1 = pd.read_csv("data1.csv")
 print("open first csv file")
 # This dataset1.csv file contains the TMDB_id, actors names and the other people in the unit.
 # TMDB is similar to IMDB. TMDB = 'The Movie Database'
 
-dataFrames_movies2 = pd.read_csv("movie_dataset_2.csv")
+dataFrames_movies2 = pd.read_csv("data2.csv")
 print("open second csv file")
 # This dataset2.csv file contains a lot of data with respect to each movie.
 # Most of the attributes in this are not in much use of use.
 # Therefore we will only take some selective attributes.
 
-dataFrames_movies = dataFrames_movies1.merge(dataFrames_movies2, on="title")
+dataFrames_movies = dataFrames_movies1.merge(dataFrames_movies2, on="movie_name")
 print("merging the frames")
-# combining movies and credits on the basis of the movie title name.
+# combining movies and credits on the basis of the movie movie_name name.
 # now attributes from both the files are in one dataframe.
 
 
-dataFrames_movies = dataFrames_movies[['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
+dataFrames_movies = dataFrames_movies[['TMDB_id', 'movie_name', 'summary', 'genres', 'labels', 'actors', 'unit']]
 print("selecting attributes")
 # selecting particular attributes from the dataset which are usefull for making tags.
 # selecting only those attributes which are helpful in making the tag.
@@ -34,7 +34,7 @@ dataFrames_movies.dropna(inplace=True)
 # if for a movie we have null values in any of the attributes, the the system will show wrong result for that movie.
 
 
-# this is a function to convert all the titles into lower case.
+# this is a function to convert all the movie_names into lower case.
 # this will help in searching at the end.
 def lower_case(x):
     return x.lower()
@@ -44,25 +44,25 @@ def lower_case(x):
 # Here we are using ast.literal_eval because of the format in which the labels are in the dataframe.
 # The labels are in the form of dictionaries in a list but the whole thing is a string.
 # that's why we are using ast.literal_eval
-def fetch_cast(x):
-    casts = []
-    counter = 0
-    for i in ast.literal_eval(x):
-        if counter <= 5:
-            casts.append(i['name'])
-            counter += 1
+def fetch_actors(x):
+    actors = []
+    number_of_actors = 0
+    for actor in ast.literal_eval(x):
+        if number_of_actors <= 5:
+            actors.append(actor['name'])
+            number_of_actors += 1
         else:
             break
-    return casts
+    return actors
 
 
 # This is the function to fetch the labels of a particular film from the dataframe and return a list.
 # even here we are using ast.literal_eval
-def fetch_keyword(x):
-    keyword = []
-    for i in ast.literal_eval(x):
-        keyword.append(i['name'])
-    return keyword
+def fetch_labels(x):
+    labels = []
+    for label in ast.literal_eval(x):
+        labels.append(label['name'])
+    return labels
 
 
 # function to fetch the generes from the dataset and return a list.
@@ -76,29 +76,29 @@ def fetch_genres(x):
 
 # function to fetch the people behind the unit from the dataset and return a list.
 # even here we are using ast.literal_eval
-def fetch_crew(x):
-    crew = []
+def fetch_unit(x):
+    unit = []
     for i in ast.literal_eval(x):
         if i['job'] == 'Director':
-            crew.append(i['name'])
+            unit.append(i['name'])
             break
-    return crew
+    return unit
 
 
 print("movie_name to lower case")
-dataFrames_movies['title'] = dataFrames_movies['title'].apply(lower_case)
+dataFrames_movies['movie_name'] = dataFrames_movies['movie_name'].apply(lower_case)
 
 print("running fetch generes")
 dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(fetch_genres)
 
 print("running fetch labels")
-dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(fetch_keyword)
+dataFrames_movies['labels'] = dataFrames_movies['labels'].apply(fetch_labels)
 
 print("running fetch actor")
-dataFrames_movies["cast"] = dataFrames_movies["cast"].apply(fetch_cast)
+dataFrames_movies["actors"] = dataFrames_movies["actors"].apply(fetch_actors)
 
 print("running fetch unit")
-dataFrames_movies["crew"] = dataFrames_movies["crew"].apply(fetch_crew)
+dataFrames_movies["unit"] = dataFrames_movies["unit"].apply(fetch_unit)
 
 
 # function to split the summary into a list
@@ -107,7 +107,7 @@ def splitting_of_string(s):
 
 
 # splitting of summary from string to list
-dataFrames_movies["overview"] = dataFrames_movies["overview"].apply(splitting_of_string)
+dataFrames_movies["summary"] = dataFrames_movies["summary"].apply(splitting_of_string)
 
 
 # function to remove the back spaces.
@@ -123,21 +123,22 @@ dataFrames_movies['genres'] = dataFrames_movies['genres'].apply(remove_spaces)
 print("removing whitespaces from genere")
 
 # removing spaces from labels so that the labels appear as one if their is a space in between
-dataFrames_movies['keywords'] = dataFrames_movies['keywords'].apply(remove_spaces)
+dataFrames_movies['labels'] = dataFrames_movies['labels'].apply(remove_spaces)
 print("removing whitespaces from labels")
 
 # removing spaces from actor names otherwise actor names won't come as one name if their is any space
-dataFrames_movies['cast'] = dataFrames_movies['cast'].apply(remove_spaces)
+dataFrames_movies['actors'] = dataFrames_movies['actors'].apply(remove_spaces)
 print("removing whitespaces from actors")
 
 # removing space from each of the unit person's name because of the same logic
-dataFrames_movies['crew'] = dataFrames_movies['crew'].apply(remove_spaces)
+dataFrames_movies['unit'] = dataFrames_movies['unit'].apply(remove_spaces)
 print("removing whitespaces from unit")
 
 
-dataFrames_movies['tags'] = dataFrames_movies['genres'] + dataFrames_movies['keywords'] + dataFrames_movies["cast"] + dataFrames_movies['crew'] + dataFrames_movies["overview"]
+dataFrames_movies['tags'] = dataFrames_movies['genres'] + dataFrames_movies['labels'] +\
+                            dataFrames_movies["actors"] + dataFrames_movies['unit'] + dataFrames_movies["summary"]
 
-final_movie_data = dataFrames_movies[['movie_id', 'title', 'tags']]
+final_movie_data = dataFrames_movies[['TMDB_id', 'movie_name', 'tags']]
 
 
 # function to join a list to string.
