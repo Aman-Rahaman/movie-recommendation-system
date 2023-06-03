@@ -10,6 +10,18 @@ import io
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+from tkinter import *
+import numpy
+import pandas as pd
+import requests
+import customtkinter
+
+from urllib.request import urlopen
+from PIL import Image, ImageTk
+import io
+
+customtkinter.set_appearance_mode("Light")
+customtkinter.set_default_color_theme("blue")
 
 
 array_of_similarity_values_for_all_movies = numpy.load("array_of_similarity_values_for_all_movies.npy")
