@@ -176,3 +176,6 @@ print("saving or loading the similarity values")
 # we will use it in the gui.
 final_movie_data.to_pickle('final_movie_data.pkl')
 print("saving or loading the final dataframe")
+
+print("Done..")
+#in finalproject
