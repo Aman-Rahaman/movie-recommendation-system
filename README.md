@@ -1,5 +1,5 @@
 # Movie-recommendation-system
-A project as part of 1D111110 Software engineering project at IIT Palakkad
+A project as part of 1D111110 Software engineering project at IIT Palakkad.   
 This is a recommendation system which recommends five similar movies based on the movie you enter using python.
 # Installation
 The following modules shall be installed in order to use this system:
