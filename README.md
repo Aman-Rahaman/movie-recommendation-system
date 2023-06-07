@@ -17,6 +17,8 @@ The following modules shall be installed in order to use this system:
 2. It can be used for both hindi and english movies.
 3. Displays results according to your interests.
 # Contributions-and-credits
-1. Aman Rahman : https://github.com/Aman-Rahaman
-2. Sandhya     : https://github.com/sandy-2604
-3. Jayati      : https://github.com/jayati05
+| Person | github account |
+|--------|----------------|
+| 1. Aman Rahman :  | https://github.com/Aman-Rahaman |
+| 2. Sandhya     : |  https://github.com/sandy-2604 |
+| 3. Jayati      :  | https://github.com/jayati05 |
