@@ -19,6 +19,6 @@ The following modules shall be installed in order to use this system:
 # Contributions-and-credits
 | Person | github account |
 |--------|----------------|
-| 1. Aman Rahman :  | https://github.com/Aman-Rahaman |
-| 2. Sandhya     : |  https://github.com/sandy-2604 |
-| 3. Jayati      :  | https://github.com/jayati05 |
+| 1. Aman Rahman   | https://github.com/Aman-Rahaman |
+| 2. Sandhya      |  https://github.com/sandy-2604 |
+| 3. Jayati        | https://github.com/jayati05 |
