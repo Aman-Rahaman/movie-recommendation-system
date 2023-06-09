@@ -1,6 +1,11 @@
+
+'''
+Movie Recommendation System
+'''
+
+import ast
 import numpy
 import pandas as pd
-import ast
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -22,7 +27,8 @@ print("merging the frames")
 # now attributes from both the files are in one dataframe.
 
 
-dataFrames_films = dataFrames_films[['TMDB_id', 'movie_name', 'summary', 'genres', 'labels', 'actors', 'unit']]
+dataFrames_films = dataFrames_films[['TMDB_id', 'movie_name', 'summary',
+                                     'genres', 'labels', 'actors', 'unit']]
 print("selecting attributes")
 # selecting particular attributes from the dataset which are usefull for making tags.
 # selecting only those attributes which are helpful in making the tag.
@@ -31,23 +37,24 @@ print("selecting attributes")
 dataFrames_films.dropna(inplace=True)
 # removing the rows which contain null values in any of their attributes
 # this is because these attributes are important to make the tags.
-# if for a movie we have null values in any of the attributes, the the system will show wrong result for that movie.
+# if for a movie we have null values in any of the attributes,
+# the the system will show wrong result for that movie.
 
 
 # this is a function to convert all the movie_names into lower case.
 # this will help in searching at the end.
-def lower_case(x):
-    return x.lower()
+def lower_case(title):
+    return title.lower()
 
 
 # This is a function to fetch the actors return a list.
 # Here we are using ast.literal_eval because of the format in which the labels are in the dataframe.
 # The labels are in the form of dictionaries in a list but the whole thing is a string.
 # that's why we are using ast.literal_eval
-def fetch_actors(x):
+def fetch_actors(actor_data):
     actors = []
     number_of_actors = 0
-    for actor in ast.literal_eval(x):
+    for actor in ast.literal_eval(actor_data):
         if number_of_actors <= 5:
             actors.append(actor['name'])
             number_of_actors += 1
@@ -58,27 +65,27 @@ def fetch_actors(x):
 
 # This is the function to fetch the labels of a particular film from the dataframe and return a list.
 # even here we are using ast.literal_eval
-def fetch_labels(x):
+def fetch_labels(keywords):
     labels = []
-    for label in ast.literal_eval(x):
+    for label in ast.literal_eval(keywords):
         labels.append(label['name'])
     return labels
 
 
 # function to fetch the generes from the dataset and return a list.
 # even here we are using ast.literal_eval
-def fetch_genres(x):
+def fetch_genres(genre_data):
     generes = []
-    for i in ast.literal_eval(x):
+    for i in ast.literal_eval(genre_data):
         generes.append(i['name'])
     return generes
 
 
 # function to fetch the people behind the unit from the dataset and return a list.
 # even here we are using ast.literal_eval
-def fetch_unit(x):
+def fetch_unit(unit_data):
     unit = []
-    for i in ast.literal_eval(x):
+    for i in ast.literal_eval(unit_data):
         if i['job'] == 'Director':
             unit.append(i['name'])
             break
@@ -102,8 +109,8 @@ dataFrames_films["unit"] = dataFrames_films["unit"].apply(fetch_unit)
 
 
 # function to split the summary into a list
-def splitting_of_string(s):
-    return s.split()
+def splitting_of_string(summary):
+    return summary.split()
 
 
 # splitting of summary from string to list
@@ -111,9 +118,9 @@ dataFrames_films["summary"] = dataFrames_films["summary"].apply(splitting_of_str
 
 
 # function to remove the back spaces.
-def remove_spaces(x):
+def remove_spaces(attribute):
     new_list = []
-    for i in x:
+    for i in attribute:
         new_list.append(i.replace(" ", ""))
     return new_list
 
@@ -145,8 +152,8 @@ final_movie_data = dataFrames_films[['TMDB_id', 'movie_name', 'tags']]
 # tags are lists before this.
 # now this function will convert the tag from a list to a string.
 # we can further do stemming of the tags
-def list_to_string(x):
-    return " ".join(x)
+def list_to_string(tags):
+    return " ".join(tags)
 
 
 print("converting tags from a list to a string")
@@ -154,10 +161,10 @@ final_movie_data.loc[:, 'tags'] = final_movie_data["tags"].apply(list_to_string)
 
 
 # function for stemming
-def stemming(x):
+def stemming(tags):
     stemmed_words = []
-    for i in x.split():
-        stemmed_words.append(PorterStemmer().stem(i))
+    for word in tags.split():
+        stemmed_words.append(PorterStemmer().stem(word))
     return " ".join(stemmed_words)
 
 
