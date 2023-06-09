@@ -18,7 +18,6 @@ final_movie_data = pd.read_pickle('final_movie_data.pkl')
 window = customtkinter.CTk()
 window.title("Movie recommendation system")
 window.geometry("1000x500")
-response = requests.get("https://api.themoviedb.org/3/movie/285?api_key=d71c21a739efb3a0137279c4d08c7612&language=en-US")
 
 
 def fetch_poster(movie_id):
